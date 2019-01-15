@@ -35,24 +35,10 @@ EXTRA_OEMAKE = "HOST_SYS='${HOST_SYS}' EXTRA_CFLAGS='${SELECTED_OPTIMIZATION}'"
 EXTRA_OEMAKE_append_libc-musl = " EXTRA_LIBS='-lfts'"
 
 do_install() {
-	oe_runmake PREFIX=${prefix} DESTDIR=${D} install
-
-	# Copy these into the standard directories
-	install -d ${D}${bindir}/
-	mv ${D}/usr/local/bin/pmempool ${D}${bindir}/
-	mv ${D}/usr/local/bin/daxio ${D}${bindir}/
-
-	install -d ${D}${libdir}
-	mv ${D}/usr/local/lib/*so* ${D}${libdir}/
-
-	install -d ${D}${libdir}/pkgconfig
-	mv ${D}/usr/local/lib/pkgconfig/*.pc ${D}${libdir}/pkgconfig/
-
-	install -d ${D}${includedir}
-	mv ${D}/usr/local/include/* ${D}${includedir}/
+	oe_runmake prefix=${prefix} DESTDIR=${D} sysconfdir=/etc install
 
 	# Remove uneeded files
-	rm -rf ${D}/usr/local/
+	rm -rf ${D}/usr/lib64/pmdk_debug
 }
 
 # Include these by default otherwise the SDK is not very useful
@@ -60,5 +46,6 @@ FILES_${PN} += "${bindir}/pmempool ${bindir}/daxio"
 FILES_${PN} += "${libdir}/*so*"
 FILES_${PN} += "${libdir}/pkgconfig/*.pc"
 FILES_${PN} += "${includedir}/libpmemobj++/* ${includedir}/libpmemobj/*"
+FILES_${PN} += "${sysconfdir}"
 
 COMPATIBLE_HOST='(x86_64).*'
